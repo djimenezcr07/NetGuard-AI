@@ -1,0 +1,20 @@
+name: Validación
+on: [push, pull_request]
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: python scripts/generate_examples.py
+      - run: pytest -q
+      - run: node --check static/app.js
+      - name: Comprobar arranque
+        run: |
+          NETGUARD_DB=/tmp/netguard-ci.db uvicorn netguard.app:app --host 127.0.0.1 --port 8080 > /tmp/netguard.log 2>&1 &
+          for i in $(seq 1 20); do if curl -fsS http://127.0.0.1:8080/api/health; then exit 0; fi; sleep 1; done
+          cat /tmp/netguard.log; exit 1
+      - run: docker build -t netguard-ci .

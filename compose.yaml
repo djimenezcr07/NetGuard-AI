@@ -1,0 +1,12 @@
+services:
+  netguard:
+    build: .
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      NETGUARD_DB: /data/netguard.db
+      NETGUARD_MAX_MB: "5"
+    volumes:
+      - netguard-data:/data
+volumes:
+  netguard-data:
