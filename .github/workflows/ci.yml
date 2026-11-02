@@ -10,7 +10,7 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - run: python scripts/generate_examples.py
-      - run: pytest -q
+      - run: python -m pytest -q
       - run: node --check static/app.js
       - name: Comprobar arranque
         run: |
